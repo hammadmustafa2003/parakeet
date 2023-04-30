@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'home.dart';
 import 'signup.dart';
 
 class LoginPage extends StatefulWidget {
@@ -33,6 +34,11 @@ class _LoginPageState extends State<LoginPage> {
       _username = myControllerUsername.text;
       _password = myControllerPassword.text;
       print("Submitting LOGIN up form...\nwith $_username and $_password");
+      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
     }
   }
 
