@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+import 'login.dart';
+
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -161,7 +164,16 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 // Logout Button
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginPage(
+                          title: 'Login Page',
+                        ),
+                      ),
+                    );
+                  },
                   child: const Text(
                     "Logout",
                     style: TextStyle(
