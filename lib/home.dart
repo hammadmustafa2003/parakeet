@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'tutorialTopics.dart';
 import 'quizTopics.dart';
 import 'package:flutter/services.dart';
+import 'models/learner.dart';
+import 'profile.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final Learner learner;
+  const HomeScreen({Key? key, required this.learner}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +59,11 @@ class HomeScreen extends StatelessWidget {
               ),
               onPressed: () {
                 //TODO: Add profile page
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfilePage(learner: learner,)),
+                );
               },
             ),
           ]
@@ -68,10 +76,10 @@ class HomeScreen extends StatelessWidget {
         mainAxisSpacing: 10.0,
         crossAxisSpacing: 10.0,
         children: <Widget>[
-          _buildTile('Tutorial', Icons.book, Colors.blue, context, TutorialTopicPage()),
-          _buildTile('Quiz', Icons.question_answer, Colors.green, context, QuizTopicPage()),
-          _buildTile( 'Public Thread', Icons.forum, Colors.orangeAccent, context, TutorialTopicPage()),
-          _buildTile( 'Chat', Icons.chat, Colors.purple, context, TutorialTopicPage()),
+          _buildTile('Tutorial', Icons.book, Colors.blue, context, TutorialTopicPage(learner: learner,)),
+          _buildTile('Quiz', Icons.question_answer, Colors.green, context, QuizTopicPage(learner: learner,)),
+          _buildTile( 'Public Thread', Icons.forum, Colors.orangeAccent, context, TutorialTopicPage(learner: learner,)),
+          _buildTile( 'Chat', Icons.chat, Colors.purple, context, TutorialTopicPage(learner: learner,)),
         ]
       ),
     );

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'home.dart';
+import 'models/learner.dart';
 import 'signup.dart';
+import 'services/auth.dart';
+import 'loading.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key, required this.title});
@@ -12,11 +16,13 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  String _username = '';
-  String _password = '';
-
+  // String _username = '';
+  // String _password = '';
+  String errorText = '';
+  late Learner _learner;
   final myControllerUsername = TextEditingController();
   final myControllerPassword = TextEditingController();
+  bool loading = false;
 
   @override
   void dispose() {
@@ -26,49 +32,91 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-
-
-  void _submitForm() {
+  void changePage(BuildContext context) async{
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HomeScreen(learner: _learner),
+      ),
+    );
+  }
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      // TODO: Add login logic here
-      _username = myControllerUsername.text;
-      _password = myControllerPassword.text;
-      print("Submitting LOGIN up form...\nwith $_username and $_password");
-      Navigator.pop(context);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+      final String username = myControllerUsername.text;
+      final String password = myControllerPassword.text;
+      print("Submitting LOGIN up form...\nwith $username and $password");
+      final Auth auth = Auth();
+      setState(() {
+        loading = true;
+      });
+      final dynamic result = await auth.signInWithUsernamePassword(username, password);
+      if (context.mounted) {
+        setState(() {
+          loading = false;
+        });
+        if (result is Learner) {
+          // Login successful
+          _learner = result;
+          changePage(context);
+        } else {
+          // Login failed
+          setState(() {
+            errorText = result;
+          });
+        }
+      }
     }
+  }
+
+  Widget _buildUserInput(String label, TextEditingController controller){
+    return TextFormField(
+      obscureText: label == 'Password',
+      controller: controller,
+      decoration: InputDecoration(
+        hintText: label,
+        border: OutlineInputBorder( borderRadius: BorderRadius.circular(10.0),),
+      ),
+      validator: (value) {
+        if (value!.isEmpty) {
+          return 'Please enter your $label';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildAppbar(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Image.asset(
+          'assets/images/icon.png',
+          fit: BoxFit.contain,
+          height: 30,
+        ),
+        const Padding(
+            padding: EdgeInsets.only (top:6.0),
+            // padding: const EdgeInsets.all(5.0),
+            child: Text(
+              'arekeet',
+              style: TextStyle( color: Colors.blue, fontSize: 30, fontFamily: 'font1') ,
+            )
+        )
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading? Loading() : Scaffold(
       backgroundColor: const Color.fromRGBO(240, 255, 255, 1),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Image.asset(
-              'assets/images/icon.png',
-              fit: BoxFit.contain,
-              height: 30,
-            ),
-            const Padding(
-              padding: EdgeInsets.only (top:6.0),
-                // padding: const EdgeInsets.all(5.0),
-                child: Text(
-                'arekeet',
-                style: TextStyle( color: Colors.blue, fontSize: 30, fontFamily: 'font1') ,
-                )
-            )
-          ],
-        ),
+        title: _buildAppbar()
       ),
       body:
       Column(
@@ -111,35 +159,16 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 32.0),
-                  TextFormField(
-                    controller: myControllerUsername,
-                    decoration: InputDecoration(
-                      hintText: 'Username',
-                      border: OutlineInputBorder( borderRadius: BorderRadius.circular(10.0),),
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter your username';
-                      }
-                      return null;
-                    },
+                  _buildUserInput('Username', myControllerUsername),
+                  const SizedBox(height: 16.0),
+                  _buildUserInput('Password', myControllerPassword),
+                  const SizedBox(height: 16.0),
+                  Text( errorText,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle( color: Colors.red, fontWeight: FontWeight.w800, fontSize: 18.0,),
                   ),
                   const SizedBox(height: 16.0),
-                  TextFormField(
-                    controller: myControllerPassword,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      hintText: 'Password',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0),),
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter your password';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16.0),
+
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 70),
                     child: ElevatedButton(
@@ -168,8 +197,6 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle( color: Colors.grey, fontWeight: FontWeight.w600,),
                     ),
                   ),
-
-
                 ],
               ),
             ),

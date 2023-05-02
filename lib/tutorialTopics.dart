@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'TutorialScreen.dart';
 import 'home.dart';
+import 'models/learner.dart';
 class TutorialTopicPage extends StatefulWidget {
-  const TutorialTopicPage({Key? key}) : super(key: key);
+  final Learner learner;
+  const TutorialTopicPage({Key? key, required this.learner}) : super(key: key);
 
   @override
   _tutorialTopicPage_State createState() => _tutorialTopicPage_State();
@@ -30,7 +32,7 @@ class _tutorialTopicPage_State extends State<TutorialTopicPage> {
     Navigator.pop(context);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => TutorialScreen(topic: item)),
+      MaterialPageRoute(builder: (context) => TutorialScreen(topic: item, learner: widget.learner,)),
     );
   }
 
@@ -131,7 +133,7 @@ class _tutorialTopicPage_State extends State<TutorialTopicPage> {
                   Navigator.pop(context);
                   Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const HomeScreen(key: Key('home')))
+                      MaterialPageRoute(builder: (context) => HomeScreen(key: Key('home'), learner: widget.learner))
                   );
                 },
               ),

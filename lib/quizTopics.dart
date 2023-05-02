@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'quizStartScreen.dart';
 import 'home.dart';
+import 'models/learner.dart';
 
 class QuizTopicPage extends StatefulWidget {
-  const QuizTopicPage({Key? key}) : super(key: key);
+  final Learner learner;
+  const QuizTopicPage({Key? key, required this.learner}) : super(key: key);
 
   @override
   _quizTopicPage_State createState() => _quizTopicPage_State();
@@ -132,7 +134,7 @@ class _quizTopicPage_State extends State<QuizTopicPage> {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen(key: Key('home')))
+                    MaterialPageRoute(builder: (context) => HomeScreen(key: const Key('home'), learner: widget.learner,))
                   );
                 },
               ),

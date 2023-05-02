@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:parakeet/tutorialTopics.dart';
 import 'package:video_player/video_player.dart';
+import 'models/learner.dart';
 
 class TutorialScreen extends StatefulWidget {
   final String topic;
-
-  TutorialScreen({required this.topic});
+  final Learner learner;
+  TutorialScreen({required this.topic, required this.learner});
 
   @override
   _TutorialScreenState createState() => _TutorialScreenState();
@@ -66,7 +67,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => TutorialTopicPage()),
+                  MaterialPageRoute(builder: (context) => TutorialTopicPage(learner: widget.learner,)),
                 );
               },
             ),
