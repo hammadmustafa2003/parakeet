@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'signup.dart';
+import '/services/database.dart';
+import '/models/question.dart';
+import '/models/quizModel.dart';
+import 'loading.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class QuizPage extends StatefulWidget {
-  const QuizPage({super.key, required this.title});
-  final String title;
+  QuizPage({super.key, required this.topic});
+  final String topic;
+
   @override
   State<QuizPage> createState() => _QuizPageState();
-}
-
-
-class Question {
-  final String text;
-  final List<String> options;
-
-  Question(this.text, this.options);
 }
 
 
@@ -22,30 +20,24 @@ class _QuizPageState extends State<QuizPage> {
 
   List<int> _selectedOption = [];
   List<Question> _questions = [];
+  bool _loading = false;
 
   @override
   void initState() {
     super.initState();
-    final List<String> questionsStatements = [
-      'What is the capital of France?',
-      'What is the highest mountain in the world?',
-      'What is the largest country in the world?',
-      'What is the currency of Japan?',
-      'What is the chemical symbol for gold?',
-    ];
+    _loadQuestions();
+  }
 
-    final List<List<String>> questionOptions = [
-      ['Paris', 'London', 'Madrid', 'Berlin'],
-      ['Mount Kilimanjaro', 'Mount Everest', 'Mount Fuji', 'Mount McKinley'],
-      ['Russia', 'China', 'Canada', 'Australia'],
-      ['Dollar', 'Euro', 'Yen', 'Pound'],
-      ['Au', 'Ag', 'Cu', 'Fe'],
-    ];
-
-    for (int i = 0; i < questionsStatements.length; i++) {
-      _questions.add(Question(questionsStatements[i], questionOptions[i]));
-    }
-    _selectedOption = List<int>.generate(_questions.length, (index) => -1);
+  Future<void> _loadQuestions() async {
+    Database db = Database();
+    setState(() {
+      _loading = true;
+    });
+    _questions = await db.getQuestionsByTopic(widget.topic, 10);
+    setState(() {
+      _loading = false;
+      _selectedOption = List.filled(_questions.length, -1);
+    });
   }
 
   void _handleRadioValueChanged(int index, int optionIndex) {
@@ -56,12 +48,19 @@ class _QuizPageState extends State<QuizPage> {
 
   void _submitForm() {
     //TODO:Add marking quiz logic here
-    print(_selectedOption);
+    int marks = 0;
+    for(int i=0; i<_selectedOption.length; i++){
+      print('selected option: ${_selectedOption[i]}, correct option: ${_questions[i].correctOption}');
+      if(_selectedOption[i] == _questions[i].correctOption){
+        marks++;
+      }
+    }
+    Fluttertoast.showToast(msg: "You scored $marks out of ${_selectedOption.length}");
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return _loading? Loading() :Scaffold(
       backgroundColor: const Color.fromRGBO(240, 255, 255, 1),
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -105,13 +104,13 @@ class _QuizPageState extends State<QuizPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Question ${index + 1}: ${question.text}',
+                          'Question ${index + 1}: ${question.statement}',
                           style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.w700),
                         ),
                         SizedBox(height: 16.0),
                         ...question.options.asMap().entries.map((entry) {
                           int optionIndex = entry.key;
-                          String optionText = entry.value;
+                          String optionText = entry.value.toString();
                           return RadioListTile<int>(
                             title: Text(optionText, style: const TextStyle(fontWeight: FontWeight.w600),),
                             value: optionIndex,

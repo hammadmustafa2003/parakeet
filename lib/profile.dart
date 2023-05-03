@@ -35,7 +35,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   size: 30,
                 ),
                 onPressed: () {
-                  // Navigator.pop(context);
                   Navigator.pop(context);
                   Navigator.push(
                     context,
