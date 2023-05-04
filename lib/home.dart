@@ -80,6 +80,7 @@ class HomeScreen extends StatelessWidget {
           _buildTile('Quiz', Icons.question_answer, Colors.green, context, QuizTopicPage(learner: learner,)),
           _buildTile( 'Public Thread', Icons.forum, Colors.orangeAccent, context, TutorialTopicPage(learner: learner,)),
           _buildTile( 'Chat', Icons.chat, Colors.purple, context, TutorialTopicPage(learner: learner,)),
+          _buildTile( 'Chat', Icons.chat, Colors.purple, context, const ChatHomeScreen()),
         ]
       ),
     );
