@@ -23,6 +23,10 @@ class MyApp extends StatelessWidget {
         fontFamily: "Montserrat",
       ),
       home: const LoginPage(title: 'Flutter Demo Home Page'),
+       getPages: [
+        GetPage(name: '/', page: () => const LoginPage(title: 'flutter')),
+        GetPage(name: '/chat', page: () => const ChatScreen()),
+      ],
     );
   }
 }
