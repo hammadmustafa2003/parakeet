@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parakeet/profile.dart';
 import 'quizStartScreen.dart';
 import 'home.dart';
 import 'models/learner.dart';
@@ -179,7 +180,11 @@ class _quizTopicPage_State extends State<QuizTopicPage> {
                   size: 30,
                 ),
                 onPressed: () {
-                  //TODO: Add profile page
+                  Navigator.pop(context);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ProfilePage(key: Key('home'), learner: widget.learner))
+                  );
                 },
               ),
             ]

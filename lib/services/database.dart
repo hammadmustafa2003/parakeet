@@ -115,4 +115,29 @@ class Database{
       }
     }
   }
+
+  Future<String> getTutorialLink(String topic) async {
+    DocumentSnapshot topicDoc = await topicsCollection.doc(topic).get();
+    String tutorialLink = topicDoc.get('tutorialLink');
+    return tutorialLink;
+  }
+
+  Future<void> saveTutorialHistory(String username, String topic) async {
+
+    final historyDoc = await historyCollection
+        .where('user', isEqualTo: username)
+        .where('type', isEqualTo: 'tutorial')
+        .where('topic', isEqualTo: topic)
+        .get()
+        .then((value) => value.docs.isNotEmpty ? value.docs.first : null);
+
+    if (historyDoc == null) {
+      await historyCollection.add({
+        'type': 'tutorial',
+        'user': username,
+        'value': 1,
+        'topic': topic,
+      });
+    }
+  }
 }
