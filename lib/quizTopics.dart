@@ -47,7 +47,7 @@ class _quizTopicPage_State extends State<QuizTopicPage> {
     Navigator.pop(context);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => QuizStartScreen(title: item)),
+      MaterialPageRoute(builder: (context) => QuizStartScreen(title: item, learner: widget.learner,)),
     );
   }
 

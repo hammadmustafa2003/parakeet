@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'models/learner.dart';
 import 'quiz.dart';
 
 class QuizStartScreen extends StatefulWidget {
-  QuizStartScreen({Key? key, required this.title}) : super(key: key);
+  final Learner learner;
+  QuizStartScreen({Key? key, required this.title, required this.learner}) : super(key: key);
 
   var title;
 
@@ -91,7 +93,7 @@ class _QuizStartScreenState extends State<QuizStartScreen> {
     Navigator.pop(context);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => QuizPage(topic: title)),
+      MaterialPageRoute(builder: (context) => QuizPage(topic: title, learner: widget.learner,)),
     );
   }
 }

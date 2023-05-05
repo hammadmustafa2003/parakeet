@@ -3,8 +3,10 @@ import '/models/learner.dart';
 import '/models/question.dart';
 
 class Database{
+
   final CollectionReference questionsCollection = FirebaseFirestore.instance.collection('question');
   final CollectionReference topicsCollection = FirebaseFirestore.instance.collection('topics');
+  final CollectionReference historyCollection = FirebaseFirestore.instance.collection('history');
 
 
   Future<dynamic> getQuestionsByTopic(String topic, int n) async {
@@ -86,6 +88,31 @@ class Database{
       return topics;
     } on Exception catch (e) {
       return e.toString();
+    }
+  }
+
+  Future<void> saveQuizHistory(String username, String topic, int marks) async {
+    final historyDoc = await historyCollection
+        .where('user', isEqualTo: username)
+        .where('type', isEqualTo: 'quiz')
+        .where('topic', isEqualTo: topic)
+        .get()
+        .then((value) => value.docs.isNotEmpty ? value.docs.first : null);
+
+    if (historyDoc == null) {
+      // Add new document
+      await historyCollection.add({
+        'type': 'quiz',
+        'user': username,
+        'value': marks,
+        'topic': topic,
+      });
+    } else {
+      // Update existing document if current marks is greater than previous value
+      final prevValue = historyDoc.get('value') as int;
+      if (marks > prevValue) {
+        await historyDoc.reference.update({'value': marks});
+      }
     }
   }
 }

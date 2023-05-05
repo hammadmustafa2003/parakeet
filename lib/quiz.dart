@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'signup.dart';
 import '/services/database.dart';
 import '/models/question.dart';
-import '/models/quizModel.dart';
 import 'loading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'quizScore.dart';
+import 'models/learner.dart';
 
 class QuizPage extends StatefulWidget {
-  QuizPage({super.key, required this.topic});
+  final Learner learner;
   final String topic;
+
+  QuizPage({super.key, required this.topic, required this.learner});
 
   @override
   State<QuizPage> createState() => _QuizPageState();
@@ -21,6 +23,8 @@ class _QuizPageState extends State<QuizPage> {
   List<int> _selectedOption = [];
   List<Question> _questions = [];
   bool _loading = false;
+  Database db = Database();
+
 
   @override
   void initState() {
@@ -29,7 +33,6 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   Future<void> _loadQuestions() async {
-    Database db = Database();
     setState(() {
       _loading = true;
     });
@@ -46,7 +49,7 @@ class _QuizPageState extends State<QuizPage> {
     });
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
     //TODO:Add marking quiz logic here
     int marks = 0;
     for(int i=0; i<_selectedOption.length; i++){
@@ -55,7 +58,25 @@ class _QuizPageState extends State<QuizPage> {
         marks++;
       }
     }
-    Fluttertoast.showToast(msg: "You scored $marks out of ${_selectedOption.length}");
+
+    setState(() {
+      _loading = true;
+    });
+    await db.saveQuizHistory(widget.learner.username, widget.topic, marks);
+
+    if (context.mounted) {
+      setState(() {
+        _loading = false;
+      });
+      Fluttertoast.showToast(msg: "You scored $marks out of ${_selectedOption.length}");
+      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ScorePage(score: marks, learner: widget.learner)),
+      );
+    }
+
+
   }
 
   @override
@@ -143,4 +164,6 @@ class _QuizPageState extends State<QuizPage> {
     );
 
   }
+
+
 }
