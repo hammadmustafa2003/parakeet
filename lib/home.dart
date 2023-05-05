@@ -4,6 +4,9 @@ import 'quizTopics.dart';
 import 'package:flutter/services.dart';
 import 'models/learner.dart';
 import 'profile.dart';
+import 'screens/chat_screen.dart';
+import 'screens/home_screen.dart';
+import 'screens/screens.dart';
 
 class HomeScreen extends StatelessWidget {
   final Learner learner;
@@ -13,80 +16,105 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      centerTitle: true,
-      title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            IconButton(
-              icon: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.blue,
-                size: 30,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios_new,
+                  color: Colors.blue,
+                  size: 30,
+                ),
+                onPressed: () {
+                  // Navigator.pop(context);
+                  SystemNavigator.pop();
+                },
               ),
-              onPressed: () {
-                // Navigator.pop(context);
-                SystemNavigator.pop();
-              },
-            ),
-
-            Center(
-              child: Row(
-                children: [
-                  Image.asset(
-                    'assets/images/icon.png',
-                    fit: BoxFit.contain,
-                    height: 30,
-                  ),
-                  const Padding(
-                      padding: EdgeInsets.only (right: 6, top: 10),
-                      // padding: const EdgeInsets.all(5.0),
-                      child: Text(
-                        'arekeet',
-                        style: TextStyle( color: Colors.blue, fontSize: 30, fontFamily: 'font1') ,
-                      )
-                  )
-                ],
+              Center(
+                child: Row(
+                  children: [
+                    Image.asset(
+                      'assets/images/icon.png',
+                      fit: BoxFit.contain,
+                      height: 30,
+                    ),
+                    const Padding(
+                        padding: EdgeInsets.only(right: 6, top: 10),
+                        // padding: const EdgeInsets.all(5.0),
+                        child: Text(
+                          'arekeet',
+                          style: TextStyle(
+                              color: Colors.blue,
+                              fontSize: 30,
+                              fontFamily: 'font1'),
+                        ))
+                  ],
+                ),
               ),
-            ),
-            IconButton(
-              icon: const Icon(
-                Icons.person_rounded,
-                color: Colors.blue,
-                size: 30,
+              IconButton(
+                icon: const Icon(
+                  Icons.person_rounded,
+                  color: Colors.blue,
+                  size: 30,
+                ),
+                onPressed: () {
+                  //TODO: Add profile page
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ProfilePage(
+                              learner: learner,
+                            )),
+                  );
+                },
               ),
-              onPressed: () {
-                //TODO: Add profile page
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage(learner: learner,)),
-                );
-              },
-            ),
-          ]
+            ]),
       ),
-    ),
       body: GridView.count(
-        crossAxisCount: 2,
-        childAspectRatio: 1.0,
-        padding: const EdgeInsets.all(12.0),
-        mainAxisSpacing: 10.0,
-        crossAxisSpacing: 10.0,
-        children: <Widget>[
-          _buildTile('Tutorial', Icons.book, Colors.blue, context, TutorialTopicPage(learner: learner,)),
-          _buildTile('Quiz', Icons.question_answer, Colors.green, context, QuizTopicPage(learner: learner,)),
-          _buildTile( 'Public Thread', Icons.forum, Colors.orangeAccent, context, TutorialTopicPage(learner: learner,)),
-          _buildTile( 'Chat', Icons.chat, Colors.purple, context, TutorialTopicPage(learner: learner,)),
-          _buildTile( 'Chat', Icons.chat, Colors.purple, context, const ChatHomeScreen()),
-        ]
-      ),
+          crossAxisCount: 2,
+          childAspectRatio: 1.0,
+          padding: const EdgeInsets.all(12.0),
+          mainAxisSpacing: 10.0,
+          crossAxisSpacing: 10.0,
+          children: <Widget>[
+            _buildTile(
+                'Tutorial',
+                Icons.book,
+                Colors.blue,
+                context,
+                TutorialTopicPage(
+                  learner: learner,
+                )),
+            _buildTile(
+                'Quiz',
+                Icons.question_answer,
+                Colors.green,
+                context,
+                QuizTopicPage(
+                  learner: learner,
+                )),
+            _buildTile(
+                'Public Thread',
+                Icons.forum,
+                Colors.orangeAccent,
+                context,
+                TutorialTopicPage(
+                  learner: learner,
+                )),
+            _buildTile('Chat', Icons.chat, Colors.purple, context,
+                const ChatHomeScreen()),
+          ]),
     );
   }
 
-  Widget _buildTile(String title, IconData icon, Color color,  BuildContext context, dynamic route) {
+  Widget _buildTile(String title, IconData icon, Color color,
+      BuildContext context, dynamic route) {
     return GestureDetector(
       onTap: () {
         Navigator.pop(context);
@@ -120,10 +148,11 @@ class HomeScreen extends StatelessWidget {
                   color: Colors.white,
                 ),
                 const SizedBox(height: 20),
-                Text(
-                  title,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Colors.white)
-                ),
+                Text(title,
+                    style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white)),
               ],
             ),
           ],

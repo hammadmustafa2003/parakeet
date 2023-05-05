@@ -2,6 +2,10 @@
 import 'login.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'screens/chat_screen.dart';
+import 'screens/home_screen.dart';
+import 'screens/screens.dart';
+import 'package:get/get.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,13 +27,10 @@ class MyApp extends StatelessWidget {
         fontFamily: "Montserrat",
       ),
       home: const LoginPage(title: 'Flutter Demo Home Page'),
-       getPages: [
+      getPages: [
         GetPage(name: '/', page: () => const LoginPage(title: 'flutter')),
         GetPage(name: '/chat', page: () => const ChatScreen()),
       ],
     );
   }
 }
-
-
-
