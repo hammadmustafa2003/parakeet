@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:parakeet/models/models.dart';
 import 'tutorialTopics.dart';
 import 'quizTopics.dart';
 import 'package:flutter/services.dart';
 import 'models/learner.dart';
 import 'profile.dart';
-import 'screens/chat_screen.dart';
-import 'screens/home_screen.dart';
-import 'screens/screens.dart';
+import 'chathomescreen.dart';
 
 class HomeScreen extends StatelessWidget {
   final Learner learner;
@@ -107,8 +106,15 @@ class HomeScreen extends StatelessWidget {
                 TutorialTopicPage(
                   learner: learner,
                 )),
-            _buildTile('Chat', Icons.chat, Colors.purple, context,
-                const ChatHomeScreen()),
+            _buildTile(
+                'Chat',
+                Icons.chat,
+                Colors.purple,
+                context,
+                ChatScreen(
+                  learner: learner,
+                  chatUsers: Message.getChatUsers(learner.username),
+                )),
           ]),
     );
   }

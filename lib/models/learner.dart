@@ -46,4 +46,54 @@ class Learner {
       'rank': rank,
     };
   }
+
+  // function to get all learners from firebase
+  static Future<List<Learner>> getAllLearners() async {
+    List<Learner> learners = [];
+    await FirebaseFirestore.instance
+        .collection('learner')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        learners.add(Learner.fromSnapshot(doc));
+      });
+    });
+    return learners;
+  }
+
+  // function to get all learners except the current user from firebase
+  static Future<List<Learner>> getLearner(String username) async {
+    List<Learner> learners = [];
+    await FirebaseFirestore.instance
+        .collection('learner')
+        .where('username', isNotEqualTo: username)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        learners.add(Learner.fromSnapshot(doc));
+      });
+    });
+    return learners;
+  }
+
+  // get a learner by username
+  static Future<Learner> getLearnerByUsername(String username) async {
+    Learner learner = Learner(
+      username: '',
+      email: '',
+      name: '',
+      points: 0,
+      rank: '',
+    );
+    await FirebaseFirestore.instance
+        .collection('learner')
+        .where('username', isEqualTo: username)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        learner = Learner.fromSnapshot(doc);
+      });
+    });
+    return learner;
+  }
 }

@@ -18,13 +18,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
   _EditProfilePageState(this.learner);
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _nameController.text = learner.name;
-    _emailController.text = learner.email;
   }
 
   @override
@@ -117,19 +115,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
               ),
             ),
-            TextFormField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                icon: Icon(
-                  Icons.email,
-                  color: Colors.blue,
-                ),
-                labelText: 'Email',
-                labelStyle: TextStyle(
-                  color: Colors.blue,
-                ),
-              ),
-            ),
             Container(
               padding: EdgeInsets.symmetric(vertical: 16.0),
               alignment: Alignment.center,
@@ -139,7 +124,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     // save the fields..
                     Learner learner = Learner(
                       name: _nameController.text,
-                      email: _emailController.text,
+                      email: widget.learner.email,
                       username: widget.learner.username,
                       rank: widget.learner.rank,
                       points: widget.learner.points,
@@ -154,8 +139,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       },
                     );
                     // update firebase
-                    await FirebaseAuth.instance.currentUser!
-                        .updateEmail(_emailController.text);
                     await FirebaseAuth.instance.currentUser!
                         .updateDisplayName(_nameController.text);
                     // route to profile page

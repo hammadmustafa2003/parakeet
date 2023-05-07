@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Message {
   final String senderId;
   final String recipientId;
   final String text;
-  final DateTime createdAt;
+  final Timestamp createdAt;
 
   const Message({
     required this.senderId,
@@ -11,108 +13,138 @@ class Message {
     required this.createdAt,
   });
 
-  static List<Message> messages = [
-    Message(
-      senderId: '1',
-      recipientId: '2',
-      text: 'Hello Jee',
-      createdAt: DateTime(2022, 08, 01, 10, 10, 10),
-    ),
-    Message(
-      senderId: '1',
-      recipientId: '2',
-      text: 'Mein superman ho',
-      createdAt: DateTime(2022, 08, 01, 10, 10, 10).add(
-        const Duration(seconds: 30),
-      ),
-    ),
-    Message(
-      senderId: '2',
-      recipientId: '1',
-      text: 'Lakin sata mein',
-      createdAt: DateTime(2022, 08, 01, 10, 10, 10).add(
-        const Duration(seconds: 120),
-      ),
-    ),
-    Message(
-      senderId: '2',
-      recipientId: '1',
-      text: 'Okay',
-      createdAt: DateTime(2022, 08, 01, 10, 10, 10).add(
-        const Duration(seconds: 200),
-      ),
-    ),
-    Message(
-      senderId: '1',
-      recipientId: '3',
-      text: 'Hey, how are you?',
-      createdAt: DateTime(2022, 08, 01, 10, 10, 10),
-    ),
-    Message(
-      senderId: '1',
-      recipientId: '3',
-      text: 'I am staying here today.',
-      createdAt: DateTime(2022, 08, 01, 10, 10, 10).add(
-        const Duration(seconds: 120),
-      ),
-    ),
-    Message(
-      senderId: '3',
-      recipientId: '1',
-      text: 'I am good, thanks. What are yo doing here today?',
-      createdAt: DateTime(2022, 08, 01, 10, 10, 10).add(
-        const Duration(seconds: 200),
-      ),
-    ),
-    Message(
-      senderId: '3',
-      recipientId: '1',
-      text: 'How are you doing today?',
-      createdAt: DateTime(2022, 08, 01, 10, 10, 10).add(
-        const Duration(seconds: 300),
-      ),
-    ),
-    Message(
-      senderId: '1',
-      recipientId: '4',
-      text: 'Hey, how are you?',
-      createdAt: DateTime(2022, 08, 01, 10, 10, 10),
-    ),
-    Message(
-      senderId: '1',
-      recipientId: '4',
-      text: 'I am staying here today.',
-      createdAt: DateTime(2022, 08, 01, 10, 10, 10).add(
-        const Duration(seconds: 120),
-      ),
-    ),
-    Message(
-      senderId: '4',
-      recipientId: '1',
-      text: 'Hey, I am good, thanks. What are yo doing here today?',
-      createdAt: DateTime(2022, 08, 01, 10, 10, 10).add(
-        const Duration(seconds: 250),
-      ),
-    ),
-    Message(
-      senderId: '4',
-      recipientId: '1',
-      text: 'What is the issue?',
-      createdAt: DateTime(2022, 08, 01, 10, 10, 10).add(
-        const Duration(seconds: 400),
-      ),
-    ),
-    Message(
-      senderId: '1',
-      recipientId: '5',
-      text: 'Hey, how are you?',
-      createdAt: DateTime(2022, 08, 01, 10, 10, 20),
-    ),
-    Message(
-      senderId: '1',
-      recipientId: '6',
-      text: 'Hey, how are you?',
-      createdAt: DateTime(2022, 08, 01, 10, 10, 40),
-    ),
-  ];
+  factory Message.fromJson(Map<String, dynamic> json) {
+    return Message(
+      senderId: json['senderId'] as String,
+      recipientId: json['recipientId'] as String,
+      text: json['text'] as String,
+      createdAt: json['createdAt'] as Timestamp,
+    );
+  }
+
+  factory Message.fromSnapshot(DocumentSnapshot snapshot) {
+    var data = snapshot.data() as Map<String, dynamic>;
+
+    return Message(
+      senderId: data['senderId'] ?? '',
+      recipientId: data['recipientId'] ?? '',
+      text: data['text'] ?? '',
+      createdAt: data['createdAt'] ?? Timestamp.now(),
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'senderId': senderId,
+      'recipientId': recipientId,
+      'text': text,
+      'createdAt': createdAt,
+    };
+  }
+
+  // function to get all messages from firebase
+  static Future<List<Message>> getAllMessages() async {
+    List<Message> messages = [];
+    await FirebaseFirestore.instance
+        .collection('message')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        messages.add(Message.fromSnapshot(doc));
+      });
+    });
+    return messages;
+  }
+
+  // function to get all messages of a particular user from firebase
+  static Future<List<Message>> getAllSentMessages(String senderId) async {
+    List<Message> messages = [];
+    await FirebaseFirestore.instance
+        .collection('message')
+        .where('senderId', isEqualTo: senderId)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        messages.add(Message.fromSnapshot(doc));
+      });
+    });
+    return messages;
+  }
+
+  // function to get all messages of a particular user either sent or received from firebase
+  static Future<List<Message>> getAllMessagesOfUser(String userId) async {
+    List<Message> messages = [];
+    await FirebaseFirestore.instance
+        .collection('message')
+        .where('senderId', isEqualTo: userId)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        messages.add(Message.fromSnapshot(doc));
+      });
+    });
+    await FirebaseFirestore.instance
+        .collection('message')
+        .where('recipientId', isEqualTo: userId)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        messages.add(Message.fromSnapshot(doc));
+      });
+    });
+    return messages;
+  }
+
+  // get messages between two users
+  static Future<List<Message>> getMessages(
+      String senderId, String recipientId) async {
+    List<Message> messages = [];
+    await FirebaseFirestore.instance
+        .collection('message')
+        .where('senderId', isEqualTo: senderId)
+        .where('recipientId', isEqualTo: recipientId)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        messages.add(Message.fromSnapshot(doc));
+      });
+    });
+    await FirebaseFirestore.instance
+        .collection('message')
+        .where('senderId', isEqualTo: recipientId)
+        .where('recipientId', isEqualTo: senderId)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        messages.add(Message.fromSnapshot(doc));
+      });
+    });
+    // make timestamp in HH:mm format
+    messages.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+    return messages;
+  }
+
+  // unique chat users
+  static Future<List<String>> getChatUsers(String userId) async {
+    List<String> chatUsers = [];
+    await FirebaseFirestore.instance
+        .collection('message')
+        .where('senderId', isEqualTo: userId)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        chatUsers.add(doc['recipientId']);
+      });
+    });
+    await FirebaseFirestore.instance
+        .collection('message')
+        .where('recipientId', isEqualTo: userId)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        chatUsers.add(doc['senderId']);
+      });
+    });
+    return chatUsers.toSet().toList();
+  }
 }
