@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -29,11 +31,39 @@ class StartChat extends StatefulWidget {
 class _StartChatState extends State<StartChat> {
   final Learner sender;
   final Learner receiver;
-  final Future<List<Message>> messages;
+  late Future<List<Message>> messages;
   _StartChatState(this.sender, this.receiver, this.messages);
 
   final _formKey = GlobalKey<FormState>();
   final _messageController = TextEditingController();
+  Timer _timer = Timer.periodic(Duration(seconds: 3), (_) {});
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(Duration(seconds: 3), (_) async {
+      Future<List<Message>> temp =
+          Message.getMessages(sender.username, receiver.username);
+      List<Message> message = await temp;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // code to reload the page here
+        if (mounted) {
+          setState(() {
+            messages = temp;
+            // scroll to the bottom of the list
+            Scrollable.ensureVisible(context);
+          });
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer
+        .cancel(); // cancel the timer when the widget is removed from the widget tree
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -165,9 +195,13 @@ class _StartChatState extends State<StartChat> {
                                 itemCount: snapshot.data!.length,
                                 itemBuilder: (context, index) {
                                   Message message = snapshot.data![index];
+                                  String formatedTime = message.createdAt
+                                      .toDate()
+                                      .toString()
+                                      .substring(11, 19);
                                   return Container(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 15),
+                                        horizontal: 05, vertical: 10),
                                     child: Row(
                                       mainAxisAlignment:
                                           message.senderId == sender.username
@@ -186,16 +220,39 @@ class _StartChatState extends State<StartChat> {
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 10, vertical: 05),
-                                            child: Text(
-                                              message.text,
-                                              style: TextStyle(
-                                                color: message.senderId ==
-                                                        sender.username
-                                                    ? Colors.white
-                                                    : Colors.black,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                            // message text and time should be displayed
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  message.text,
+                                                  style: TextStyle(
+                                                    color: message.senderId ==
+                                                            sender.username
+                                                        ? Colors.white
+                                                        : Colors.black,
+                                                    fontSize: 16,
+                                                    fontFamily: 'font1',
+                                                  ),
+                                                ),
+                                                const SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Text(
+                                                  formatedTime,
+                                                  style: TextStyle(
+                                                    color: message.senderId ==
+                                                            sender.username
+                                                        ? Colors.white
+                                                        : Colors.black,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    fontSize: 12,
+                                                    fontFamily: 'font2',
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ),
