@@ -103,7 +103,7 @@ class HomeScreen extends StatelessWidget {
                 Icons.forum,
                 Colors.orangeAccent,
                 context,
-                TutorialTopicPage(
+                ThreadScreen(
                   learner: learner,
                 )),
             _buildTile(
