@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:parakeet/profile.dart';
 import 'quizStartScreen.dart';
 import 'home.dart';
 import 'models/learner.dart';
+import '/services/database.dart';
+import 'loading.dart';
 
 class QuizTopicPage extends StatefulWidget {
   final Learner learner;
@@ -12,20 +15,32 @@ class QuizTopicPage extends StatefulWidget {
 }
 
 class _quizTopicPage_State extends State<QuizTopicPage> {
+  bool _loading = false;
   bool _isBasicExpanded = false;
   bool _isAdvancedExpanded = false;
 
-  final List<String> _basicList = [
-    'Basic Option 1',
-    'Basic Option 2',
-    'Basic Option 3',
-  ];
-  final List<String> _advancedList = [
-    'Advanced Option 1',
-    'Advanced Option 2',
-    'Advanced Option 3',
-    'Advanced Option 4',
-  ];
+  late List<String> _basicList;
+  late List<String> _advancedList;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
+    Database db = Database();
+    setState(() {
+      _loading = true;
+    });
+    _basicList = await db.getBasicTopics();
+    _advancedList = await db.getAdvancedTopics();
+
+    setState(() {
+      _loading = false;
+    });
+  }
 
   void loadQuiz(String item) {
     print('Selected item: $item');
@@ -33,7 +48,7 @@ class _quizTopicPage_State extends State<QuizTopicPage> {
     Navigator.pop(context);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => QuizStartScreen(title: item)),
+      MaterialPageRoute(builder: (context) => QuizStartScreen(title: item, learner: widget.learner,)),
     );
   }
 
@@ -114,7 +129,7 @@ class _quizTopicPage_State extends State<QuizTopicPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return _loading? Loading() :Scaffold(
       backgroundColor: const Color.fromRGBO(240, 255, 255, 1),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -165,7 +180,11 @@ class _quizTopicPage_State extends State<QuizTopicPage> {
                   size: 30,
                 ),
                 onPressed: () {
-                  //TODO: Add profile page
+                  Navigator.pop(context);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ProfilePage(key: Key('home'), learner: widget.learner))
+                  );
                 },
               ),
             ]

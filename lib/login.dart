@@ -5,14 +5,12 @@ import 'signup.dart';
 import 'services/auth.dart';
 import 'loading.dart';
 
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key, required this.title});
   final String title;
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
-
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
@@ -32,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void changePage(BuildContext context) async{
+  void changePage(BuildContext context) async {
     Navigator.pop(context);
     Navigator.push(
       context,
@@ -41,6 +39,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       final String username = myControllerUsername.text;
@@ -50,7 +49,8 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         loading = true;
       });
-      final dynamic result = await auth.signInWithUsernamePassword(username, password);
+      final dynamic result =
+          await auth.signInWithUsernamePassword(username, password);
       if (context.mounted) {
         setState(() {
           loading = false;
@@ -69,13 +69,15 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Widget _buildUserInput(String label, TextEditingController controller){
+  Widget _buildUserInput(String label, TextEditingController controller) {
     return TextFormField(
       obscureText: label == 'Password',
       controller: controller,
       decoration: InputDecoration(
         hintText: label,
-        border: OutlineInputBorder( borderRadius: BorderRadius.circular(10.0),),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
       ),
       validator: (value) {
         if (value!.isEmpty) {
@@ -86,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildAppbar(){
+  Widget _buildAppbar() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,112 +99,130 @@ class _LoginPageState extends State<LoginPage> {
           height: 30,
         ),
         const Padding(
-            padding: EdgeInsets.only (top:6.0),
+            padding: EdgeInsets.only(top: 6.0),
             // padding: const EdgeInsets.all(5.0),
             child: Text(
               'arekeet',
-              style: TextStyle( color: Colors.blue, fontSize: 30, fontFamily: 'font1') ,
-            )
-        )
+              style: TextStyle(
+                  color: Colors.blue, fontSize: 30, fontFamily: 'font1'),
+            ))
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return loading? Loading() : Scaffold(
-      backgroundColor: const Color.fromRGBO(240, 255, 255, 1),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        title: _buildAppbar()
-      ),
-      body:
-      Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          const Text(
-            "Welcome !",
-            style: TextStyle(
-              fontSize: 50,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.0),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.4),
-                  spreadRadius: 3,
-                  blurRadius: 5,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Form(
-              key: _formKey,
+    return loading
+        ? Loading()
+        : Scaffold(
+            backgroundColor: const Color.fromRGBO(240, 255, 255, 1),
+            appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                centerTitle: true,
+                title: _buildAppbar()),
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(vertical: 30),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   const Text(
-                    'Login to Continue',
-                    textAlign: TextAlign.center,
+                    "Welcome !",
                     style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 30.0,
+                      fontSize: 50,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 32.0),
-                  _buildUserInput('Username', myControllerUsername),
-                  const SizedBox(height: 16.0),
-                  _buildUserInput('Password', myControllerPassword),
-                  const SizedBox(height: 16.0),
-                  Text( errorText,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle( color: Colors.red, fontWeight: FontWeight.w800, fontSize: 18.0,),
-                  ),
-                  const SizedBox(height: 16.0),
-
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 70),
-                    child: ElevatedButton(
-                        onPressed: _submitForm,
-                        style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 16),
-                            shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(30),),
-                            elevation: 20
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 80),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 20),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.0),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.4),
+                          spreadRadius: 3,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
                         ),
-                        child: const Text('Log In', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),)
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 20.0,width: 50),
-
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SignupPage()),
-                      );
-                    },
-                    child: const Text(
-                      'Create a new account',
-                      textAlign: TextAlign.center,
-                      style: TextStyle( color: Colors.grey, fontWeight: FontWeight.w600,),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Text(
+                            'Login to Continue',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 30.0,
+                            ),
+                          ),
+                          const SizedBox(height: 32.0),
+                          _buildUserInput('Username', myControllerUsername),
+                          const SizedBox(height: 16.0),
+                          _buildUserInput('Password', myControllerPassword),
+                          const SizedBox(height: 16.0),
+                          Text(
+                            errorText,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 18.0,
+                            ),
+                          ),
+                          const SizedBox(height: 16.0),
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 70),
+                            child: ElevatedButton(
+                                onPressed: _submitForm,
+                                style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12, horizontal: 16),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    elevation: 20),
+                                child: const Text(
+                                  'Log In',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600),
+                                )),
+                          ),
+                          const SizedBox(height: 20.0, width: 50),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SignupPage()),
+                              );
+                            },
+                            child: const Text(
+                              'Create a new account',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  )
                 ],
               ),
             ),
-          )
-        ],
-      ),
-    );
+          );
   }
 }
