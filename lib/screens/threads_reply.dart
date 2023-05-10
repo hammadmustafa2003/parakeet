@@ -7,6 +7,10 @@ import 'package:parakeet/home.dart';
 import 'package:parakeet/models/models.dart';
 import 'package:parakeet/screens/home_screen_public_thread.dart';
 import 'package:parakeet/services/thread_db.dart';
+import '/screens/home_screen_public_thread.dart';
+import '/models/threads_header.dart';
+
+
 
 class ThreadReplyScreen extends StatefulWidget {
   final Learner learner;
@@ -32,7 +36,9 @@ class _ThreadReplyScreenState extends State<ThreadReplyScreen> {
     final a  = await thDB.fetchReply();
     final notFiltered =  await a.docs.map((doc) => doc.data()).toList();
     reply = notFiltered.where((element) => element['title'] == widget.header.title).toList();
+    if (mounted){
     setState(() { });
+    }
   }
 
 

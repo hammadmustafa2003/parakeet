@@ -8,6 +8,7 @@ import 'package:parakeet/models/models.dart';
 import 'package:parakeet/services/thread_db.dart';
 import 'threads_reply.dart';
 import 'threads_create.dart';
+import '/models/threads_header.dart';
 
 class ThreadScreen extends StatefulWidget {
   final Learner learner;
@@ -27,7 +28,9 @@ class _ThreadScreenState extends State<ThreadScreen> {
   dynamic _getThread() async {
     final a = await thDB.fetchThreads();
     allData = await a.docs.map((doc) => doc.data()).toList();
+    if (mounted){
     setState(() {});
+    }
   }
 
   @override

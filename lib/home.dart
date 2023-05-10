@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'models/learner.dart';
 import 'profile.dart';
 import 'chathomescreen.dart';
+import 'screens/home_screen_public_thread.dart';
 
 class HomeScreen extends StatelessWidget {
   final Learner learner;

@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:parakeet/models/message_header.dart';
 import 'package:parakeet/models/models.dart';
+import '/models/threads_header.dart';
+
 
 
 class Thread_db {
